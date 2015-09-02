@@ -1,0 +1,27 @@
+{
+  "name": "csv_uploader",
+  "version": "0.0.0",
+  "description": "Upload CSV files, convert to JSON and send to requestbin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "requestbin"
+  ],
+  "author": "Broadly",
+  "license": "BSD",
+  "dependencies": {
+    "express": "~4.13.3",
+    "csv": "~0.4.6",
+    "express-handlebars": "~2.0.1",
+    "body-parser": "~1.13.3"
+  },
+  "devDependencies": {
+    "mocha": "~2.3.0",
+    "chai": "~3.2.0",
+    "zombie": "~4.1.0"
+  }
+}
