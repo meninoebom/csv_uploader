@@ -1,10 +1,11 @@
 var express = require('express');
-var http = require('http');
+var httpRequest = require('request');
 var handlebars = require('express-handlebars') .create({ defaultLayout:'main' });
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
 
 var app = express();
 
+app.requestBinUrl = 'http://requestb.in/13tcawk1';
 app.set('port', process.env.PORT || 3000);
 // set up handlebars view engine
 app.engine('handlebars', handlebars.engine);
@@ -18,7 +19,16 @@ app.route('/business/:id/upload')
   })
   .post(function (req, res) {
     var businessId = req.params.id;
-    res.render('thankyou', {data: JSON.stringify(req.body, null, 2)});
+
+    var data = JSON.stringify(req.body, null, 2);
+
+    httpRequest.post({url: app.requestBinUrl, form: {key:'foo'}}, function(error, response, body){
+      if (!error) {
+        console.log(body);
+        res.render('thankyou', {data: JSON.stringify(req.body, null, 2)});
+      }
+    });
+
   });
 
 // custom 404 page
