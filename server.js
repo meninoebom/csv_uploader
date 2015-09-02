@@ -20,12 +20,23 @@ app.route('/business/:id/upload')
   .post(function (req, res) {
     var businessId = req.params.id;
 
-    var data = JSON.stringify(req.body, null, 2);
+    var dataObj = {business: ""+businessId, customers: []};
+    var customerData = req.body.csvCustomerData.split('\r\n')
+    dataObj.customers = customerData.map(function(curr){
+      var result = {};
+      var fields = curr.split(',');
+      result.name = fields[0];
+      result.email = fields[1];
+      return result;
+    });
+    var json = JSON.stringify(dataObj, null, 2);
+    console.log('json = ', json);
 
-    httpRequest.post({url: app.requestBinUrl, form: {key:'foo'}}, function(error, response, body){
+    // send json to Request Bin for persistence
+    httpRequest.post({url: app.requestBinUrl, form: json}, function(error, response, body){
       if (!error) {
         console.log(body);
-        res.render('thankyou', {data: JSON.stringify(req.body, null, 2)});
+        res.render('thankyou', {data: JSON.stringify(req.body.csvCustomerData, null, 2)});
       }
     });
 
@@ -45,3 +56,13 @@ app.use(function(err, req, res, next){ console.error(err.stack);
 });
 
 module.exports = app;
+
+// {
+//   "business": "opsdsagiopas",
+//   "customers": [
+//     {
+//       "name": "balah bahoab"
+//       "email": "blah@blah.com"
+//     }
+//   ]
+// }
