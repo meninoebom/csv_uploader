@@ -2,6 +2,7 @@ var express = require('express');
 var httpRequest = require('request');
 var handlebars = require('express-handlebars') .create({ defaultLayout:'main' });
 var bodyParser = require('body-parser');
+var path = require('path');
 
 var app = express();
 
@@ -11,6 +12,8 @@ app.set('port', process.env.PORT || 3000);
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({ extended: false }))  // parse application/x-www-form-urlencoded 
+app.use(express.static(path.join(__dirname, 'public'))); //  "public" off of current is root
+
 
 app.route('/business/:id/upload')
   .get(function (req, res) {
@@ -20,6 +23,7 @@ app.route('/business/:id/upload')
   .post(function (req, res) {
     var businessId = req.params.id;
 
+    // create and populate object to be converted to json
     var dataObj = {business: ""+businessId, customers: []};
     var customerData = req.body.csvCustomerData.split('\r\n')
     dataObj.customers = customerData.map(function(curr){
@@ -30,7 +34,6 @@ app.route('/business/:id/upload')
       return result;
     });
     var json = JSON.stringify(dataObj, null, 2);
-    console.log('json = ', json);
 
     // send json to Request Bin for persistence
     httpRequest.post({url: app.requestBinUrl, form: json}, function(error, response, body){

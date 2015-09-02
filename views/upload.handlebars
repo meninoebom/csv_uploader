@@ -1,10 +1,21 @@
 <h1>Broadly Customer CSV Uploader</h1>
-{{id}}
 
-<form method="post">
+<form id="customer-data-form" method="post">
   <div class="form-group">
     <label for="exampleInputEmail1">CSV Formatted Customer Data</label>
-    <textarea id="csvCustomerData" name="csvCustomerData" class="form-control" rows="3" placeholder="Copy and paste your customer data here"></textarea>
+    <textarea id="customer-data-text-field" name="csvCustomerData" class="form-control" rows="3" placeholder="Copy and paste your customer data here"></textarea>
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <button id="customer-data-form-submit-btn" class="btn btn-primary">Submit</button>
 </form>
+
+<div id="error-modal" class="modal fade">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <p><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></p>
+        <h4 class="error-modal-content"></h4>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
