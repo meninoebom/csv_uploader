@@ -41,6 +41,7 @@ app.route('/business/:id/upload')
       dataObj.customers = parser.parseCustomerData(customerData);
     } catch(err) {
       res.render('error', {id: businessId, details: err.message});
+      return;
     }
 
     // send json to Request Bin for persistence
