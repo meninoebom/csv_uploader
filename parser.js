@@ -4,7 +4,9 @@ function parseCustomerData(customerData){
   for(var i = 0; i < customerData.length; i++){
     var fields = customerData[i].split(',');
     var customer = {}
-    if(fields.length !== 2) return false;
+    if(fields.length < 2) throw new Error('Incorrectly formatted CSV');
+
+
     if(fields[0] || fields[1]) {      
       customer.name = fields[0];
       customer.email = fields[1];

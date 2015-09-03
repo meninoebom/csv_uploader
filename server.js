@@ -33,27 +33,28 @@ app.route('/business/:id/upload')
 
     // create and populate object to be converted to json
     var dataObj = {business: ""+businessId, customers: []};
-    //@TODO assumes that submission includes header row, error checking needed
-    var customerData = req.body.csvCustomerData.split('\r\n').slice(1);
     
-    dataObj.customers = parser.parseCustomerData(customerData);
-
-    console.log('dataObj = ', dataObj);
-
-    if(dataObj.customers) { // if parsing was successful
-      // send json to Request Bin for persistence
-      var json = JSON.stringify(dataObj, null, 2);
-      httpRequest.post({url: app.requestBinUrl, form: json}, function(error, response, body){
-        if (!error) {
-          res.render('thankyou', {name: users[businessId]});
-        } else {
-          console.log(error);
-          res.render('sorry', {details: error});
-        }
-      });
-    } else { // if parsing failed
-      res.render('sorry', {details: 'Your CSV file was incorrectly formatted.'});
+    //@TODO assumes that submission includes header row, error checking needed
+    var customerData = req.body.csvCustomerData.trim().split('\r\n').slice(1);
+    
+    try {
+      dataObj.customers = parser.parseCustomerData(customerData);
+    } catch(err) {
+      res.render('error', {id: businessId, details: err.message});
     }
+
+    // send json to Request Bin for persistence
+    var json = JSON.stringify(dataObj, null, 2);
+    httpRequest.post({url: app.requestBinUrl, form: json}, function(error, response, body){
+      if (!error) {
+        res.render('thankyou', {name: users[businessId]});
+      } else {
+        console.log(error);
+        res.render('error', {id: businessId, details: error.message});
+      }
+    });
+
+
   });
 
 // custom 404 page
@@ -70,13 +71,3 @@ app.use(function(err, req, res, next){ console.error(err.stack);
 });
 
 module.exports = app;
-
-// {
-//   "business": "opsdsagiopas",
-//   "customers": [
-//     {
-//       "name": "balah bahoab"
-//       "email": "blah@blah.com"
-//     }
-//   ]
-// }
