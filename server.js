@@ -3,6 +3,15 @@ var httpRequest = require('request');
 var handlebars = require('express-handlebars') .create({ defaultLayout:'main' });
 var bodyParser = require('body-parser');
 var path = require('path');
+var parser = require('./parser.js');
+
+var users = {
+  1: 'Foobar Inc.',
+  2: 'Bazfizz Corp',
+  3: 'Acme Ventures',
+  4: 'Lee Brothers',
+  5: 'Brown and Company'
+}
 
 var app = express();
 
@@ -14,7 +23,6 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.urlencoded({ extended: false }))  // parse application/x-www-form-urlencoded 
 app.use(express.static(path.join(__dirname, 'public'))); //  "public" off of current is root
 
-
 app.route('/business/:id/upload')
   .get(function (req, res) {
     var businessId = req.params.id;
@@ -25,24 +33,27 @@ app.route('/business/:id/upload')
 
     // create and populate object to be converted to json
     var dataObj = {business: ""+businessId, customers: []};
-    var customerData = req.body.csvCustomerData.split('\r\n')
-    dataObj.customers = customerData.map(function(curr){
-      var result = {};
-      var fields = curr.split(',');
-      result.name = fields[0];
-      result.email = fields[1];
-      return result;
-    });
-    var json = JSON.stringify(dataObj, null, 2);
+    //@TODO assumes that submission includes header row, error checking needed
+    var customerData = req.body.csvCustomerData.split('\r\n').slice(1);
+    
+    dataObj.customers = parser.parseCustomerData(customerData);
 
-    // send json to Request Bin for persistence
-    httpRequest.post({url: app.requestBinUrl, form: json}, function(error, response, body){
-      if (!error) {
-        console.log(body);
-        res.render('thankyou', {data: JSON.stringify(req.body.csvCustomerData, null, 2)});
-      }
-    });
+    console.log('dataObj = ', dataObj);
 
+    if(dataObj.customers) { // if parsing was successful
+      // send json to Request Bin for persistence
+      var json = JSON.stringify(dataObj, null, 2);
+      httpRequest.post({url: app.requestBinUrl, form: json}, function(error, response, body){
+        if (!error) {
+          res.render('thankyou', {name: users[businessId]});
+        } else {
+          console.log(error);
+          res.render('sorry', {details: error});
+        }
+      });
+    } else { // if parsing failed
+      res.render('sorry', {details: 'Your CSV file was incorrectly formatted.'});
+    }
   });
 
 // custom 404 page
