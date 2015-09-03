@@ -51,8 +51,6 @@ app.route('/business/:id/upload')
         res.render('error', {id: businessId, details: error.message});
       }
     });
-
-
   });
 
 // custom 404 page
