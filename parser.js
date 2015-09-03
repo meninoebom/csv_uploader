@@ -1,5 +1,6 @@
 function parseCustomerData(customerData){
-  var result = customerData.map(function(item){
+  var dataArray = customerData.trim().split('\r\n').slice(1);
+  var result = dataArray.map(function(item){
     var customer = {};
     var fields = item.split(',');
     if(fields.length < 2) throw new Error('Incorrectly formatted CSV');

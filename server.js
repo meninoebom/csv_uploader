@@ -34,11 +34,8 @@ app.route('/business/:id/upload')
     // create and populate object to be converted to json
     var dataObj = {business: ""+businessId, customers: []};
     
-    //@TODO assumes that submission includes header row, error checking needed
-    var customerData = req.body.csvCustomerData.trim().split('\r\n').slice(1);
-    
     try {
-      dataObj.customers = parser.parseCustomerData(customerData);
+      dataObj.customers = parser.parseCustomerData(req.body.csvCustomerData);
     } catch(err) {
       res.render('error', {id: businessId, details: err.message});
       return;
