@@ -1,6 +1,5 @@
 $(document).ready(function(){
   $('#customer-data-text-field').on('focus', function(){
-    console.log('focus');
     $(this).parent('.form-group').removeClass('has-error');
   });
 
