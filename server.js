@@ -1,9 +1,9 @@
-var express = require('express');
-var httpRequest = require('request');
-var handlebars = require('express-handlebars') .create({ defaultLayout:'main' });
-var bodyParser = require('body-parser');
-var path = require('path');
-var parser = require('./parser.js');
+const express = require('express');
+const httpRequest = require('request');
+const handlebars = require('express-handlebars') .create({ defaultLayout:'main' });
+const bodyParser = require('body-parser');
+const path = require('path');
+const parser = require('./parser.js');
 
 var users = {
   1: 'Foobar Inc.',
