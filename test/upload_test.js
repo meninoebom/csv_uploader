@@ -11,11 +11,13 @@ describe('CSV Uploader', function() {
   let browser;
   let server;
 
+  // setup
   before(function() {
     server = app.listen(9876);
     browser = new Browser({ site: 'http://localhost:9876' });
   });
   
+  // async setup
   before(function(done) {
     browser.visit('/business/1/upload', done);
   });
@@ -31,9 +33,8 @@ describe('CSV Uploader', function() {
     });
   });
 
-  describe('The CSV upload UI', function() {
-
-    it('should load the upload page successfully', function(){
+  describe('The csv upload ui', function() {
+    it('should load successfully', function(){
       browser.assert.success();
     });
 
@@ -50,10 +51,16 @@ describe('CSV Uploader', function() {
       browser.assert.attribute('textarea', 'placeholder', 'Copy and paste your customer data here');
     });
 
-    it('should refuse empty submissions', function() {
-      browser.pressButton('Submit');
-      browser.assert.elements('.form-group.has-error', { exactly: 1 });
-      browser.pressButton('Close');
+    it('should reject empty submissions', function(done) {
+      browser.pressButton('Submit', function(){
+        browser.assert.elements('.form-group.has-error', 1);
+        browser.assert.text('.error-modal-content', 'Please paste your customer data in the field provided.');
+        browser.assert.text('.modal-close-btn', 'Close');
+      });
+      browser.pressButton('Close', function() {
+        browser.assert.text('.modal-close-btn', 'Close');
+        done();
+      });
     });
 
     it('should accept complete submissions', function(done){
@@ -70,5 +77,4 @@ describe('CSV Uploader', function() {
   after(function() {
     server.close();
   });
-
 });
